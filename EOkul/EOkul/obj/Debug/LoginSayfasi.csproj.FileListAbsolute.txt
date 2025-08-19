@@ -1,0 +1,12 @@
+C:\Users\Quantum\Desktop\İş\Projeler\Kursdevam\LoginSayfasi\LoginSayfasi\bin\Debug\LoginSayfasi.exe.config
+C:\Users\Quantum\Desktop\İş\Projeler\Kursdevam\LoginSayfasi\LoginSayfasi\bin\Debug\LoginSayfasi.exe
+C:\Users\Quantum\Desktop\İş\Projeler\Kursdevam\LoginSayfasi\LoginSayfasi\bin\Debug\LoginSayfasi.pdb
+C:\Users\Quantum\Desktop\İş\Projeler\Kursdevam\LoginSayfasi\LoginSayfasi\obj\Debug\LoginSayfasi.csproj.AssemblyReference.cache
+C:\Users\Quantum\Desktop\İş\Projeler\Kursdevam\LoginSayfasi\LoginSayfasi\obj\Debug\LoginSayfasi.Properties.Resources.resources
+C:\Users\Quantum\Desktop\İş\Projeler\Kursdevam\LoginSayfasi\LoginSayfasi\obj\Debug\LoginSayfasi.csproj.GenerateResource.cache
+C:\Users\Quantum\Desktop\İş\Projeler\Kursdevam\LoginSayfasi\LoginSayfasi\obj\Debug\LoginSayfasi.csproj.CoreCompileInputs.cache
+C:\Users\Quantum\Desktop\İş\Projeler\Kursdevam\LoginSayfasi\LoginSayfasi\obj\Debug\LoginSayfasi.exe
+C:\Users\Quantum\Desktop\İş\Projeler\Kursdevam\LoginSayfasi\LoginSayfasi\obj\Debug\LoginSayfasi.pdb
+C:\Users\Quantum\Desktop\İş\Projeler\Kursdevam\LoginSayfasi\LoginSayfasi\obj\Debug\LoginSayfasi.exe.config
+C:\Users\Quantum\Desktop\İş\Projeler\Kursdevam\LoginSayfasi\LoginSayfasi\obj\Debug\LoginSayfasi.Login.resources
+C:\Users\Quantum\Desktop\İş\Projeler\Kursdevam\LoginSayfasi\LoginSayfasi\obj\Debug\LoginSayfasi.AnaMenu.resources

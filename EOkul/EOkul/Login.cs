@@ -16,9 +16,10 @@ namespace EOkul
 {
     public partial class Login : Form
     {
-        public partial class global
+        public partial class Global
         {
             public static string globalKulllaniciSinif;
+            public static string kullaniciID;
         }
         readonly SqlConnection baglanti = new SqlConnection(@"Data Source=YAZILIMPC-15;Initial Catalog=DBOgrenciNot;Integrated Security=True;TrustServerCertificate=True");
 
@@ -30,7 +31,6 @@ namespace EOkul
         {
             pnlMain.BackColor = Color.FromArgb(100, 0, 0, 0);
             btnSubmit.BackColor = Color.FromArgb(50, 0, 0, 0);
-
         }
             
             public void BtnSubmit_Click(object sender, EventArgs e)
@@ -45,32 +45,42 @@ namespace EOkul
                 }
             }
 
-        private void FGirisYap()
+        private void FGirisYap()//Giriş Fonksiyonu
         {
+            //Parola Şifreleme
             string sifrelenmisSifre = FMD5Sifreleme(txtSifre.Text);
 
-            SqlCommand komut = new SqlCommand("Select * From TBLKULLANICIBILGI where KULLANICIAD = @KAdi and PAROLA = @KParola", baglanti);
+
+            //Kullanıcı Adı ve Parola Kontrolü
+            SqlCommand komut = new SqlCommand("Select * From TBLGIRISBILGI where KULLANICIAD = @KAdi and PAROLA = @KParola", baglanti);
             komut.Parameters.AddWithValue("@KAdi", txtKAdi.Text);
             komut.Parameters.AddWithValue("@KParola", sifrelenmisSifre);
 
-            SqlCommand turkomut = new SqlCommand("SELECT TURID FROM TBLKULLANICIBILGI WHERE KULLANICIAD=@KAdi AND PAROLA=@KParola", baglanti);
+
+            //Kullanıcı Tipi Tespiti
+            SqlCommand turkomut = new SqlCommand("SELECT TBLKULLANICIBILGI.TURID FROM TBLGIRISBILGI INNER JOIN TBLKULLANICIBILGI ON TBLKULLANICIBILGI.ID = TBLGIRISBILGI.OGRID WHERE TBLGIRISBILGI.KULLANICIAD = @KAdi AND TBLGIRISBILGI.PAROLA = @KParola", baglanti);
             turkomut.Parameters.AddWithValue("@KAdi", txtKAdi.Text);
             turkomut.Parameters.AddWithValue("@KParola", sifrelenmisSifre);
 
             baglanti.Open();
 
+            //Kullanıcı Tipi Değişken Ataması (Tek değer olduğundan ExecuteScalar komutu ile atama yapılıyor.)
             object sonuc = turkomut.ExecuteScalar();
 
+            //Data Adapter ile veri dönüştürülüyor.
             SqlDataAdapter da = new SqlDataAdapter(komut);
+            //Data Table Tanımlaması Yapılıyor
             DataTable dt = new DataTable();
+            //Data Adapter veriyi Data Table'A yediriyor.
             da.Fill(dt);
 
             baglanti.Close();
 
+
             if (sonuc != null)
             {
-                global.globalKulllaniciSinif = Convert.ToString(sonuc);
-
+                Global.globalKulllaniciSinif = Convert.ToString(sonuc);
+                //Eğer Parola Eşleşmesi Varsa Gİriş Başarılı Mesajı Gösteriliyor Ve Ana Panel Açılıyor.
                 int row = dt.Rows.Count;
                 if (row > 0)
                 {
@@ -87,22 +97,38 @@ namespace EOkul
             }
         }
 
-        private void FKaydol()
+        private void FKaydol()//Kayıt Oluşturma Fonksiyonu
         {
             while (true)
-            {
+            {   //Format Kontrolü
                 if ((txtKAdi.Text).Length <= 25 && (txtKAdi.Text).Length > 4 && (txtSifre.Text).Length <= 30 && (txtSifre.Text).Length <= 30 && (txtSifre.Text).Length > 8 && !Regex.IsMatch(txtKAdi.Text, @"[çÇğĞıİöÖşŞüÜ\s]"))
                 {
+                    //Parola Şifreleme Fonksiyonu Çağrılıyor.
                     string sifrelenmisSifre = FMD5Sifreleme(txtSifre.Text);
+
                     baglanti.Open();
-                    SqlCommand komut = new SqlCommand("Insert Into TBLKULLANICIBILGI (KULLANICIAD, PAROLA) values (@KAdi, @KParola)", baglanti);
+                    //Kullanıcı Bilgileri Veritabanına TBLKULLANICIBILGI Tablosuna İşlenir
+                    SqlCommand komut = new SqlCommand(@"Insert Into TBLGIRISBILGI (KULLANICIAD, PAROLA) values (@KAdi, @KParola) SELECT * From TBLKULLANICIBILGI WHERE KULLANICIAD = @KAdi AND PAROLA = @KParola", baglanti);
                     komut.Parameters.AddWithValue("@KAdi", txtKAdi.Text);
                     komut.Parameters.AddWithValue("@KParola", sifrelenmisSifre);
-                    komut.ExecuteNonQuery();
+                    object id = komut.ExecuteScalar();
+                    Global.kullaniciID = Convert.ToString(id);
+                    SqlCommand komut2 = new SqlCommand("INSERT INTO TBLKULLANICIBILGI (OGRID, OGRAD, OGRSOYAD, OGRCINSIYET) VALUES (@ogrID, @ogrAD, @ogrSoyad, @ogrCinsiyet)", baglanti);
+                    komut2.Parameters.AddWithValue("@ogrID", id);
+                    komut2.Parameters.AddWithValue("@ogrAD", txtKullaniciAd.Text);
+                    komut2.Parameters.AddWithValue("@ogrSoyad", txtKullaniciSoyad);
+                    komut2.Parameters.AddWithValue("@ogrCinsiyet", cbKullaniciCinsiyet.Text);
+                    komut2.ExecuteNonQuery();
+                    
                     baglanti.Close();
 
                     txtKAdi.Text = "";
                     txtSifre.Text = "";
+                    txtKullaniciAd.Text = "";
+                    txtKullaniciSoyad.Text = "";
+                    cbKullaniciCinsiyet.Text = "";
+
+
                     MessageBox.Show("Kullanıcı Başarıyla Eklendi!");
                     break;
                 }
@@ -113,7 +139,7 @@ namespace EOkul
                 }
             }
         }
-        public string FMD5Sifreleme(string girdi)
+        public static string FMD5Sifreleme(string girdi)
         {
             byte[] encodedSifre = new UTF8Encoding().GetBytes(girdi);
             byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(encodedSifre);
@@ -125,13 +151,19 @@ namespace EOkul
 
         private void GirisMiKayıtMı_CheckedChanged(object sender, EventArgs e)
         {
+            GroupBox groupBoxKayit = new GroupBox();
+
             if (lblBaslik.Text == "Giriş")
             {
+                groupBoxKayit.Enabled = true;
+                groupBoxKayit.Visible = true;
                 lblBaslik.Text = "Kayıt";
                 GirisMiKayıtMı.Checked = true;
             }
             else
             {
+                groupBoxKayit.Enabled = false;
+                groupBoxKayit.Visible = false;
                 lblBaslik.Text = "Giriş";
                 GirisMiKayıtMı.Checked = false;
             }

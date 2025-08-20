@@ -107,16 +107,16 @@ namespace EOkul
                     string sifrelenmisSifre = FMD5Sifreleme(txtSifre.Text);
 
                     baglanti.Open();
-                    //Kullanıcı Bilgileri Veritabanına TBLKULLANICIBILGI Tablosuna İşlenir
-                    SqlCommand komut = new SqlCommand(@"Insert Into TBLGIRISBILGI (KULLANICIAD, PAROLA) values (@KAdi, @KParola) SELECT * From TBLKULLANICIBILGI WHERE KULLANICIAD = @KAdi AND PAROLA = @KParola", baglanti);
+                    //Kullanıcı Bilgileri Veritabanına TBLGIRISBILGI Tablosuna İşlenir
+                    SqlCommand komut = new SqlCommand(@"Insert Into TBLGIRISBILGI (KULLANICIAD, PAROLA) values (@KAdi, @KParola) SELECT SCOPE_IDENTITY()", baglanti);
                     komut.Parameters.AddWithValue("@KAdi", txtKAdi.Text);
                     komut.Parameters.AddWithValue("@KParola", sifrelenmisSifre);
                     object id = komut.ExecuteScalar();
                     Global.kullaniciID = Convert.ToString(id);
                     SqlCommand komut2 = new SqlCommand("INSERT INTO TBLKULLANICIBILGI (OGRID, OGRAD, OGRSOYAD, OGRCINSIYET) VALUES (@ogrID, @ogrAD, @ogrSoyad, @ogrCinsiyet)", baglanti);
-                    komut2.Parameters.AddWithValue("@ogrID", id);
+                    komut2.Parameters.AddWithValue("@ogrID", Convert.ToInt32(id));
                     komut2.Parameters.AddWithValue("@ogrAD", txtKullaniciAd.Text);
-                    komut2.Parameters.AddWithValue("@ogrSoyad", txtKullaniciSoyad);
+                    komut2.Parameters.AddWithValue("@ogrSoyad", txtKullaniciSoyad.Text);
                     komut2.Parameters.AddWithValue("@ogrCinsiyet", cbKullaniciCinsiyet.Text);
                     komut2.ExecuteNonQuery();
                     
@@ -151,18 +151,14 @@ namespace EOkul
 
         private void GirisMiKayıtMı_CheckedChanged(object sender, EventArgs e)
         {
-            GroupBox groupBoxKayit = new GroupBox();
-
             if (lblBaslik.Text == "Giriş")
             {
-                groupBoxKayit.Enabled = true;
                 groupBoxKayit.Visible = true;
                 lblBaslik.Text = "Kayıt";
                 GirisMiKayıtMı.Checked = true;
             }
             else
             {
-                groupBoxKayit.Enabled = false;
                 groupBoxKayit.Visible = false;
                 lblBaslik.Text = "Giriş";
                 GirisMiKayıtMı.Checked = false;
